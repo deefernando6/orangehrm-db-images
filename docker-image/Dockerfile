@@ -2,7 +2,7 @@ FROM centos:7
 
 #RUN groupadd -r mysql && useradd -r -g mysql mysql
 
-COPY mariadb.repo /etc/yum.repos.d/
+COPY config/mariadb.repo /etc/yum.repos.d/
 RUN yum install -y MariaDB-server
 
 # # Install gosu.  https://github.com/tianon/gosu
@@ -18,6 +18,7 @@ RUN yum install -y MariaDB-server
 #RUN rm -rf /var/lib/mysql/*
 
 VOLUME /var/lib/mysql
+COPY config/server.cnf /etc/my.cnf.d/server.cnf
 
 COPY entrypoint.sh /usr/local/bin/
 RUN ln -s /usr/local/bin/entrypoint.sh /
