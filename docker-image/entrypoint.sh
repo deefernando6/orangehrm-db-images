@@ -7,57 +7,54 @@ fi
 
 if [ "$1" = 'mysqld_safe' ]; then
 	DATADIR="/var/lib/mysql"
+
+	if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ]; then
+		echo >&2 'error: database is uninitialized and MYSQL_ROOT_PASSWORD not set'
+		echo >&2 '  Did you forget to add -e MYSQL_ROOT_PASSWORD=... ?'
+		exit 1
+	fi
 	
-	# if [ ! -d "$DATADIR/mysql" ]; then
-		if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ]; then
-			echo >&2 'error: database is uninitialized and MYSQL_ROOT_PASSWORD not set'
-			echo >&2 '  Did you forget to add -e MYSQL_ROOT_PASSWORD=... ?'
-			exit 1
+	echo 'Running mysql_install_db ...'
+	mysql_install_db --datadir="$DATADIR"
+	echo 'Finished mysql_install_db'
+	
+	# These statements _must_ be on individual lines, and _must_ end with
+	# semicolons (no line breaks or comments are permitted).
+	# TODO proper SQL escaping on ALL the things D:
+	
+	tempSqlInitFile='/tmp/mysql-init-file.sql'
+	cat > "$tempSqlInitFile" <<-EOSQL
+		DELETE FROM mysql.user WHERE User='root' AND Host !='%' ;
+		DELETE FROM mysql.user WHERE User='' ;
+		CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
+		ALTER USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
+		GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
+		DROP DATABASE IF EXISTS test ;
+		FLUSH PRIVILEGES ;
+	EOSQL
+	
+	if [ "$MYSQL_DATABASE" ]; then
+		echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` ;" >> "$tempSqlInitFile"
+		if [ "$MYSQL_CHARSET" ]; then
+			echo "ALTER DATABASE \`$MYSQL_DATABASE\` CHARACTER SET \`$MYSQL_CHARSET\` ;" >> "$tempSqlInitFile"
 		fi
 		
-		echo 'Running mysql_install_db ...'
-		mysql_install_db --datadir="$DATADIR"
-		echo 'Finished mysql_install_db'
-		
-		# These statements _must_ be on individual lines, and _must_ end with
-		# semicolons (no line breaks or comments are permitted).
-		# TODO proper SQL escaping on ALL the things D:
-		
-		tempSqlInitFile='/tmp/mysql-init-file.sql'
-		cat > "$tempSqlInitFile" <<-EOSQL
-            DELETE FROM mysql.user WHERE User='root' AND Host !='%' ;
-            DELETE FROM mysql.user WHERE User='' ;
-			CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
-            ALTER USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
-			GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
-			DROP DATABASE IF EXISTS test ;
-            FLUSH PRIVILEGES ;
-		EOSQL
+		if [ "$MYSQL_COLLATION" ]; then
+			echo "ALTER DATABASE \`$MYSQL_DATABASE\` COLLATE \`$MYSQL_COLLATION\` ;" >> "$tempSqlInitFile"
+		fi
+	fi
+	
+	if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
+		echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" >> "$tempSqlInitFile"
 		
 		if [ "$MYSQL_DATABASE" ]; then
-			echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` ;" >> "$tempSqlInitFile"
-			if [ "$MYSQL_CHARSET" ]; then
-				echo "ALTER DATABASE \`$MYSQL_DATABASE\` CHARACTER SET \`$MYSQL_CHARSET\` ;" >> "$tempSqlInitFile"
-			fi
-			
-			if [ "$MYSQL_COLLATION" ]; then
-				echo "ALTER DATABASE \`$MYSQL_DATABASE\` COLLATE \`$MYSQL_COLLATION\` ;" >> "$tempSqlInitFile"
-			fi
+			echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" >> "$tempSqlInitFile"
 		fi
-		
-		if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
-			echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" >> "$tempSqlInitFile"
-			
-			if [ "$MYSQL_DATABASE" ]; then
-				echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" >> "$tempSqlInitFile"
-			fi
-		fi
-		
-		echo 'FLUSH PRIVILEGES ;' >> "$tempSqlInitFile"
-		
-		set -- "$@" --init-file="$tempSqlInitFile"
-	# fi
+	fi
 	
+	echo 'FLUSH PRIVILEGES ;' >> "$tempSqlInitFile"
+	
+	set -- "$@" --init-file="$tempSqlInitFile"	
 fi
-echo "$@"
+
 exec "$@"
