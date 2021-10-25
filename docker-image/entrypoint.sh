@@ -23,8 +23,8 @@ if [ "$1" = 'mysqld_safe' ]; then
 		# semicolons (no line breaks or comments are permitted).
 		# TODO proper SQL escaping on ALL the things D:
 		
-		tempSqlFile='/tmp/mysql-first-time.sql'
-		cat > "$tempSqlFile" <<-EOSQL
+		tempSqlInitFile='/tmp/mysql-init-file.sql'
+		cat > "$tempSqlInitFile" <<-EOSQL
             DELETE FROM mysql.user WHERE User='root' AND Host !='%' ;
             DELETE FROM mysql.user WHERE User='' ;
 			CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
@@ -35,27 +35,27 @@ if [ "$1" = 'mysqld_safe' ]; then
 		EOSQL
 		
 		if [ "$MYSQL_DATABASE" ]; then
-			echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` ;" >> "$tempSqlFile"
+			echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` ;" >> "$tempSqlInitFile"
 			if [ "$MYSQL_CHARSET" ]; then
-				echo "ALTER DATABASE \`$MYSQL_DATABASE\` CHARACTER SET \`$MYSQL_CHARSET\` ;" >> "$tempSqlFile"
+				echo "ALTER DATABASE \`$MYSQL_DATABASE\` CHARACTER SET \`$MYSQL_CHARSET\` ;" >> "$tempSqlInitFile"
 			fi
 			
 			if [ "$MYSQL_COLLATION" ]; then
-				echo "ALTER DATABASE \`$MYSQL_DATABASE\` COLLATE \`$MYSQL_COLLATION\` ;" >> "$tempSqlFile"
+				echo "ALTER DATABASE \`$MYSQL_DATABASE\` COLLATE \`$MYSQL_COLLATION\` ;" >> "$tempSqlInitFile"
 			fi
 		fi
 		
 		if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
-			echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" >> "$tempSqlFile"
+			echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" >> "$tempSqlInitFile"
 			
 			if [ "$MYSQL_DATABASE" ]; then
-				echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" >> "$tempSqlFile"
+				echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" >> "$tempSqlInitFile"
 			fi
 		fi
 		
-		echo 'FLUSH PRIVILEGES ;' >> "$tempSqlFile"
+		echo 'FLUSH PRIVILEGES ;' >> "$tempSqlInitFile"
 		
-		set -- "$@" --init-file="$tempSqlFile"
+		set -- "$@" --init-file="$tempSqlInitFile"
 	# fi
 	
 fi
