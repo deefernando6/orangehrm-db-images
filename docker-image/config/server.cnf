@@ -7,6 +7,9 @@
 
 # this is read by the standalone daemon and embedded servers
 [server]
+
+# this is only for the mysqld standalone daemon
+[mysqld]
 max_allowed_packet=64M
 event_scheduler=on
 connect_timeout=10
@@ -21,12 +24,7 @@ slave_net_timeout=600
 wait_timeout=600
 interactive_timeout=600
 sql-mode=
-skip-host-cache
 skip-name-resolve
-datadir = /var/lib/mysql
-
-# this is only for the mysqld standalone daemon
-[mysqld]
 
 #
 # * Galera-related settings
