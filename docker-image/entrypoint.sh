@@ -18,6 +18,12 @@ if [ "$1" = 'mysqld_safe' ]; then
 	mysql_install_db --datadir="$DATADIR"
 	echo 'Finished mysql_install_db'
 	
+	if [ ! -f "/var/lib/mysql/INNODB_CLEANED" ]; then	
+		rm -f /var/lib/mysql/ib_logfile*
+		rm -f /var/lib/mysql/ibdata*
+		echo "INNODB_CLEANED" >> /var/lib/mysql/INNODB_CLEANED
+	fi
+
 	# These statements _must_ be on individual lines, and _must_ end with
 	# semicolons (no line breaks or comments are permitted).
 	# TODO proper SQL escaping on ALL the things D:
@@ -30,7 +36,6 @@ if [ "$1" = 'mysqld_safe' ]; then
 		ALTER USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
 		GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
 		DROP DATABASE IF EXISTS test ;
-		FLUSH PRIVILEGES ;
 	EOSQL
 	
 	if [ "$MYSQL_DATABASE" ]; then
