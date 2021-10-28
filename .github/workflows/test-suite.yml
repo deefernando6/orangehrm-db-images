@@ -16,8 +16,8 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v2
             
-            - name: list directories
-              run: ls
+            - name: Build docker image
+              run: echo " - ${{ env.GITHUB_REF_SLUG }}"
             
             - name: Veirfy docker-compose installation
               run: |
