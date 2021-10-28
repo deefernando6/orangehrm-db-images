@@ -1,0 +1,20 @@
+name: OrangeHRM Database image test suite
+
+on:
+    push:
+      branches: [ mariadb-10.2 ]
+env:
+    # Use docker.io for Docker Hub if empty
+    REGISTRY: hub.docker.com
+    # github.repository as <account>/<repo>
+    IMAGE_REPO_NAME: "orangehrm/orangehrm-db-images"
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+            
+            - name: list directories
+              run: ls
