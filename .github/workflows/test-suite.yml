@@ -12,7 +12,7 @@ env:
     DEFAULT_IMAGE_TAG: "latest"
     MYSQL_PASSWORD: "1234"
     UPSTREAM_REPO: "orangehrm/orangehrm-db-images"
-    UPSTREAM_BRANCH: "mariadb-10.2"
+    UPSTREAM_BRANCH: "refs/heads/mariadb-10.2"
 
 jobs:
     Build:
@@ -42,14 +42,14 @@ jobs:
               run: php vendor/bin/codecept run unit  
               
             - name: login to docker hub
-              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH && job.status='success' }}
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH && job.status='success' }}
               run: echo "loggin in"
             
             - name: push docker image
-              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH && job.status='success' }}
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH && job.status='success' }}
               run: echo "pushing image"
             
             - name: log out from docker hub
-              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH }}
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH }}
               run: echo "log out"
 
