@@ -9,7 +9,7 @@ on:
 env:
     REGISTRY: hub.docker.com
     DOCKER_HUB_REPO: "orangehrm/orangehrm-db-images"
-    DEFAULT_IMAGE_TAG: "latest"
+    DEFAULT_TAG_NAME: "latest"
     MYSQL_PASSWORD: "1234"
     UPSTREAM_REPO: "orangehrm/orangehrm-db-images"
     UPSTREAM_BRANCH: "refs/heads/mariadb-10.2"
@@ -31,25 +31,32 @@ jobs:
               run: composer install
                           
             - name: Build docker image
-              run: docker build -t ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_IMAGE_TAG }} docker-image
+              run: docker build -t ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} docker-image
 
             - name: Spin up a container
               run: |
-                docker run -itd --name db_container -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_IMAGE_TAG }}
+                docker run -itd --name db_container -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }}
                 docker ps -a
 
             - name: Run unit tests
               run: php vendor/bin/codecept run unit  
               
-            - name: login to docker hub
-              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH && job.status="success" }}
-              run: echo "loggin in"
-            
+            - name: New image with a version tag
+              run: |
+                echo ::set-env name=VERSION_TAG_NAME::$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)
+                docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:${{ env.VERSION_TAG_NAME }} 
+
+            - name: sample verification
+              run: |
+                docker images
+                echo $VERSION_TAG_NAME
+
             - name: push docker image
-              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH && job.status="success" }}
-              run: echo "pushing image"
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH}}
+              run: |
+                echo "loggin in"
+                echo "pushing both images"
+                echo "log out"
             
-            - name: log out from docker hub
-              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH }}
-              run: echo "log out"
+
 
