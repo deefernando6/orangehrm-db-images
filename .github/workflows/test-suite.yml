@@ -2,6 +2,8 @@ name: OrangeHRM Database image test suite
 
 on:
     push:
+      branches: [ mariadb-10.2 ]   
+    pull_request:
       branches: [ mariadb-10.2 ]
 
 env:
@@ -40,14 +42,14 @@ jobs:
               run: php vendor/bin/codecept run unit  
               
             - name: login to docker hub
-              if: ${{ GITHUB_REPOSITORY == env.UPSTREAM_REPO && GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH && job.status='success' }}
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH && job.status='success' }}
               run: echo "loggin in"
             
             - name: push docker image
-              if: ${{ GITHUB_REPOSITORY == env.UPSTREAM_REPO && GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH && job.status='success' }}
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH && job.status='success' }}
               run: echo "pushing image"
             
             - name: log out from docker hub
-              if: ${{ GITHUB_REPOSITORY == env.UPSTREAM_REPO && GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH }}
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH }}
               run: echo "log out"
 
