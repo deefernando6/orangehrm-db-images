@@ -26,7 +26,6 @@ jobs:
                 docker --version
                 docker-compose --version
                 composer --version
-                cat /etc/os/release
             
             - name: Install test dependencis
               run: composer install
