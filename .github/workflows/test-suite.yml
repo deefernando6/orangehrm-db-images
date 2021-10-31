@@ -3,7 +3,7 @@ name: OrangeHRM Database image test suite
 on:
     push:
       branches: [ mariadb-10.2 ]
-      
+
 env:
     REGISTRY: hub.docker.com
     IMAGE_REPO_NAME: "orangehrm/orangehrm-db-images"
@@ -28,7 +28,7 @@ jobs:
 
             - name: Spin up a container
               run: |
-                docker run -itd --name db_cotainer -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.IMAGE_REPO_NAME }}:${{ env.TEST_TAG_NAME }}
+                docker run -itd --name db_container -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.IMAGE_REPO_NAME }}:${{ env.TEST_TAG_NAME }}
                 docker ps -a
             
             - name: Install test dependencis
