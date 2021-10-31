@@ -3,12 +3,12 @@ name: OrangeHRM Database image test suite
 on:
     push:
       branches: [ mariadb-10.2 ]
+      
 env:
-    # Use docker.io for Docker Hub if empty
     REGISTRY: hub.docker.com
-    # github.repository as <account>/<repo>
     IMAGE_REPO_NAME: "orangehrm/orangehrm-db-images"
     TEST_TAG_NAME: "mariadb-10.2"
+    MYSQL_PASSWORD: "1234"
 
 jobs:
     test:
@@ -17,16 +17,22 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v2
             
+            - name: Verify prerequisits
+              run: |
+                docker --version
+                docker-compose --version
+                composer --version
+
             - name: Build docker image
               run: docker build -t ${{ env.IMAGE_REPO_NAME }}:${{ env.TEST_TAG_NAME }} docker-image
 
             - name: Spin up a container
               run: |
-                docker images
-                docker run -itd --name db_cotainer ${{ env.IMAGE_REPO_NAME }}:${{ env.TEST_TAG_NAME }}
+                docker run -itd --name db_cotainer -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.IMAGE_REPO_NAME }}:${{ env.TEST_TAG_NAME }}
                 docker ps -a
             
-            - name: Veirfy docker-compose installation
-              run: |
-                docker-compose --version
-                docker --version
+            - name: Install test dependencis
+              run: composer install
+                          
+            - name: Run unit tests
+              run: php vendor/bin/codecept run unit
