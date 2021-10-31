@@ -45,3 +45,4 @@ jobs:
               run: |
                 echo "This is hello world always ${{ job.status }}"
                 echo ${GITHUB_REF#refs/heads/}
+                echo ${github.event.repository.name}
