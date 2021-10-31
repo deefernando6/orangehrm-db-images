@@ -42,11 +42,11 @@ jobs:
               run: php vendor/bin/codecept run unit  
               
             - name: login to docker hub
-              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH && job.status='success' }}
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH && job.status="success" }}
               run: echo "loggin in"
             
             - name: push docker image
-              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH && job.status='success' }}
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH && job.status="success" }}
               run: echo "pushing image"
             
             - name: log out from docker hub
