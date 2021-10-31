@@ -102,6 +102,6 @@ class MySQLVariableCest
     {
         $I->wantTo("Veify skip_name_resolve");
         $I->runShellCommand("docker exec db_container mysql -uroot -p1234 --execute=\"show variables like 'skip_name_resolve';\" | grep skip_name_resolve | awk '{print $2}'"); 
-        $I->seeInShellOutput("OFF");
+        $I->seeInShellOutput("ON");
     }
 }

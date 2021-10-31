@@ -6,13 +6,14 @@ on:
 
 env:
     REGISTRY: hub.docker.com
-    IMAGE_REPO_NAME: "orangehrm/orangehrm-db-images"
-    TEST_TAG_NAME: "mariadb-10.2"
+    DOCKER_HUB_REPO: "orangehrm/orangehrm-db-images"
+    DEFAULT_IMAGE_TAG: "latest"
     MYSQL_PASSWORD: "1234"
+    UPSTREAM_REPO: "orangehrm/orangehrm-db-images"
+    UPSTREAM_BRANCH: "mariadb-10.2"
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
+    Build:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -22,27 +23,31 @@ jobs:
                 docker --version
                 docker-compose --version
                 composer --version
-
-            - name: Build docker image
-              run: docker build -t ${{ env.IMAGE_REPO_NAME }}:${{ env.TEST_TAG_NAME }} docker-image
-
-            - name: Spin up a container
-              run: |
-                docker run -itd --name db_container -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.IMAGE_REPO_NAME }}:${{ env.TEST_TAG_NAME }}
-                docker ps -a
+                cat /etc/os/release
             
             - name: Install test dependencis
               run: composer install
                           
-            - name: Run unit tests
-              run: php vendor/bin/codecept run unit
-            
-            - name: last not always
-              run: echo "hello world chanaka"
-            
-            - name: always task
-              if: always()
+            - name: Build docker image
+              run: docker build -t ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_IMAGE_TAG }} docker-image
+
+            - name: Spin up a container
               run: |
-                echo "This is hello world always ${{ job.status }}"
-                echo ${GITHUB_REF#refs/heads/}
-                echo ${GITHUB_REPOSITORY}
+                docker run -itd --name db_container -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_IMAGE_TAG }}
+                docker ps -a
+
+            - name: Run unit tests
+              run: php vendor/bin/codecept run unit  
+              
+            - name: login to docker hub
+              if: ${{ GITHUB_REPOSITORY == env.UPSTREAM_REPO && GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH && job.status='success' }}
+              run: echo "loggin in"
+            
+            - name: push docker image
+              if: ${{ GITHUB_REPOSITORY == env.UPSTREAM_REPO && GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH && job.status='success' }}
+              run: echo "pushing image"
+            
+            - name: log out from docker hub
+              if: ${{ GITHUB_REPOSITORY == env.UPSTREAM_REPO && GITHUB_REF#refs/heads/ == env.UPSTREAM_BRANCH }}
+              run: echo "log out"
+
