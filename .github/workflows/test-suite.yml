@@ -36,3 +36,12 @@ jobs:
                           
             - name: Run unit tests
               run: php vendor/bin/codecept run unit
+            
+            - name: last not always
+              run: echo "hello world chanaka"
+            
+            - name: always task
+              if: always()
+              run: |
+                echo "This is hello world always ${{ job.status }}"
+                echo ${GITHUB_REF#refs/heads/}
