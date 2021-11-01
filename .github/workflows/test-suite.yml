@@ -48,6 +48,13 @@ jobs:
 
             - name: New image with a version tag
               run: docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:mariadb-${{ env.VERSION_TAG_NAME }} 
+              
+            - name: verify environment variables - for debugging
+              run: |
+                echo ${{ env.GITHUB_REPOSITORY }}
+                echo ${{ env.UPSTREAM_REPO }}
+                echo ${{ env.GITHUB_REF }}
+                echo ${{ env.UPSTREAM_BRANCH }}
 
             - name: Docker hub login
               if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH}}
