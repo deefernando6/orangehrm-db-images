@@ -27,7 +27,7 @@ jobs:
                 docker-compose --version
                 composer --version
             
-            - name: Install test dependencis
+            - name: Install test suite dependencis
               run: composer install
                           
             - name: Build docker image
@@ -38,32 +38,32 @@ jobs:
                 docker run -itd --name db_container -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }}
                 docker ps -a
 
-            - name: Run unit tests
+            - name: Run unit test suite
               run: |
                 sleep 10s
                 php vendor/bin/codecept run unit  
               
             - name: Get installed mariadb version
-              run: |
-                echo "VERSION_TAG_NAME=$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)" >> $GITHUB_ENV
+              run: echo "VERSION_TAG_NAME=$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)" >> $GITHUB_ENV
 
             - name: New image with a version tag
-              run: |
-                echo $VERSION_TAG_NAME
-                echo '${{ env.VERSION_TAG_NAME }}'
-                docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:mariadb-${{ env.VERSION_TAG_NAME }} 
+              run: docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:mariadb-${{ env.VERSION_TAG_NAME }} 
 
-            - name: sample verification
-              run: |
-                docker images
-                echo $VERSION_TAG_NAME
-
-            - name: push docker image
+            - name: Docker hub login
               if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH}}
-              run: |
-                echo "loggin in"
-                echo "pushing both images"
-                echo "log out"
+              run: docker login -u=${{ secrets.DOCKER_HUB_USERNAME }} -p=${{ secrets.DOCKER_HUB_PASSWORD }}
+
+            - name: Deploy changes to the version tag
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH}}
+              run: docker push ${{ env.DOCKER_HUB_REPO }}:mariadb-${{ env.VERSION_TAG_NAME }}
+
+            - name: Deploy changes to the latest tag
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH}}
+              run: docker push ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }}
+              
+            - name: Docker hub logout
+              if: ${{ env.GITHUB_REPOSITORY == env.UPSTREAM_REPO && env.GITHUB_REF == env.UPSTREAM_BRANCH}}
+              run: docker logout
             
 
 
