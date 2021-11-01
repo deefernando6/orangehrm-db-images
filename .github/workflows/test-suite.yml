@@ -40,14 +40,12 @@ jobs:
 
             - name: Run unit tests
               run: |
-                docker ps -a
-                docker logs db_container
                 sleep 10s
                 php vendor/bin/codecept run unit  
               
             - name: New image with a version tag
               run: |
-                echo ::set-env name=VERSION_TAG_NAME::$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)
+                echo "VERSION_TAG_NAME=$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)" >> $GITHUB_ENV
                 docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:${{ env.VERSION_TAG_NAME }} 
 
             - name: sample verification
