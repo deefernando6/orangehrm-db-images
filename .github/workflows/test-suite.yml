@@ -47,6 +47,7 @@ jobs:
               run: |
                 echo "VERSION_TAG_NAME=$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)" >> $GITHUB_ENV
                 cat $GITHUB_ENV
+                echo $VERSION_TAG_NAME
                 echo '${{ env.VERSION_TAG_NAME }}'
                 docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:${{ env.VERSION_TAG_NAME }} 
 
