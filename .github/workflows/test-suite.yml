@@ -39,7 +39,9 @@ jobs:
                 docker ps -a
 
             - name: Run unit tests
-              run: php vendor/bin/codecept run unit  
+              run: |
+                docker ps -a
+                php vendor/bin/codecept run unit  
               
             - name: New image with a version tag
               run: |
