@@ -1,0 +1,9 @@
+name: OrangeHRM Database Image Scheduled Build Workflow
+
+on:
+    schedule:
+      - cron:  '*/5 * * * *'
+
+jobs:
+    ScheduledBuild:
+        uses: ${{ github.repository }}/.github/workflows/build-workflow.yml@${GITHUB_REF##*/}
