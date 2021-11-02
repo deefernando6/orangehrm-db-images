@@ -1,4 +1,4 @@
-name: OrangeHRM Database image test suite
+name: OrangeHRM Database Image Build Workflow
 
 on:
     push:
@@ -50,19 +50,19 @@ jobs:
               run: docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:mariadb-${{ env.VERSION_TAG_NAME }} 
 
             - name: Docker hub login
-              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH}}
+              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH && github.event.pull_request.merged}}
               run: docker login -u=${{ secrets.DOCKER_HUB_USERNAME }} -p=${{ secrets.DOCKER_HUB_PASSWORD }}
 
             - name: Deploy changes to the version tag
-              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH}}
+              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH && github.event.pull_request.merged}}
               run: docker push ${{ env.DOCKER_HUB_REPO }}:mariadb-${{ env.VERSION_TAG_NAME }}
 
             - name: Deploy changes to the latest tag
-              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH}}
+              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH && github.event.pull_request.merged}}
               run: docker push ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }}
               
             - name: Docker hub logout
-              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH}}
+              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH && github.event.pull_request.merged }}
               run: docker logout
             
 
