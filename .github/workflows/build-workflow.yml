@@ -44,9 +44,7 @@ jobs:
                 php vendor/bin/codecept run unit 
             
             - name: check branch
-              run: |
-                echo ${{ github.ref#refs/heads/}}
-                echo $GITHUB_REF#refs/heads/
+              run: echo $GITHUB_REF#refs/heads/
               
             - name: Get installed mariadb version
               run: echo "VERSION_TAG_NAME=$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)" >> $GITHUB_ENV
