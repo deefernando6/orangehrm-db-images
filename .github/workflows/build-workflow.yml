@@ -41,10 +41,7 @@ jobs:
             - name: Run unit test suite
               run: |
                 sleep 10s
-                php vendor/bin/codecept run unit 
-            
-            - name: check branch
-              run: echo ${GITHUB_REF##*/}
+                php vendor/bin/codecept run unit
               
             - name: Get installed mariadb version
               run: echo "VERSION_TAG_NAME=$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)" >> $GITHUB_ENV
