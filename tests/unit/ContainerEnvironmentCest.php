@@ -9,22 +9,22 @@ class ContainerEnvironmentCest
     // tests
     public function vefiryOSVersionTest (UnitTester $I)
     {
-        $I->wantTo("Veify the container os version - RHEL 8.4");
+        $I->wantTo("Veify the container os version - Ubuntu 20.04");
         $I->runShellCommand("docker exec db_container cat /etc/os-release | grep PRETTY_NAME | cut -d'=' -f 2"); 
-        $I->seeInShellOutput("Red Hat Enterprise Linux 8.4 (Ootpa)");
+        $I->seeInShellOutput("Ubuntu 20.04.3 LTS");
     }
 
     public function vefiryInstalledMariaDBVersionTest (UnitTester $I)
     {
         $I->wantTo("Veify the MariaDB version - 10.3");
         $I->runShellCommand("docker exec db_container mysql -uroot -p1234 --execute=\"SELECT @@version;\""); 
-        $I->seeInShellOutput("10.3.28");
+        $I->seeInShellOutput("10.3.32");
     }
 
     public function vefiryInstalledMariaDBRepoTest (UnitTester $I)
     {
-        $I->wantTo("Veify the MariaDB repository is RHEL appstream");
-        $I->runShellCommand("docker exec db_container yum list installed | grep mariadb-server | awk '{print $3}'"); 
-        $I->seeInShellOutput("@rhel-8-for-x86_64-appstream-rpms");
+        $I->wantTo("Veify the MariaDB repository");
+        $I->runShellCommand("docker exec db_container apt show mariadb-server | grep Maintainer"); 
+        $I->seeInShellOutput("MariaDB Developers");
     }
 }
