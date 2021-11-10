@@ -16,9 +16,9 @@ class ContainerEnvironmentCest
 
     public function vefiryInstalledMariaDBVersionTest (UnitTester $I)
     {
-        $I->wantTo("Veify the MariaDB version - 10.3");
+        $I->wantTo("Veify the MariaDB version - 10.5");
         $I->runShellCommand("docker exec db_container mysql -uroot -p1234 --execute=\"SELECT @@version;\""); 
-        $I->seeInShellOutput("10.3.32");
+        $I->seeInShellOutput("10.5.13");
     }
 
     public function vefiryInstalledMariaDBRepoTest (UnitTester $I)
