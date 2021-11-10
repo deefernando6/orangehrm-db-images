@@ -8,6 +8,12 @@ fi
 if [ "$1" = 'mysqld_safe' ]; then
 	DATADIR="/var/lib/mysql"
 
+	
+	# Create MariaDB log file if not exists
+	touch /var/log/mariadb/mariadb.log
+	chown mysql:root /var/log/mariadb/mariadb.log
+	chmod 770 /var/log/mariadb/mariadb.log
+
 	if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ]; then
 		echo >&2 'error: database is uninitialized and MYSQL_ROOT_PASSWORD not set'
 		echo >&2 '  Did you forget to add -e MYSQL_ROOT_PASSWORD=... ?'
@@ -15,7 +21,8 @@ if [ "$1" = 'mysqld_safe' ]; then
 	fi
 	
 	echo 'Running mysql_install_db ...'
-	mysql_install_db --datadir="$DATADIR"
+	# Refresh MariaDB installation
+	mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
 	echo 'Finished mysql_install_db'
 	
 	if [ ! -f "/var/lib/mysql/INNODB_CLEANED" ]; then	
@@ -23,7 +30,7 @@ if [ "$1" = 'mysqld_safe' ]; then
 		rm -f /var/lib/mysql/ibdata*
 		echo "INNODB_CLEANED" >> /var/lib/mysql/INNODB_CLEANED
 	fi
-
+	
 	# These statements _must_ be on individual lines, and _must_ end with
 	# semicolons (no line breaks or comments are permitted).
 	# TODO proper SQL escaping on ALL the things D:

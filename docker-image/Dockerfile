@@ -1,10 +1,14 @@
-FROM centos:7
-
-COPY config/mariadb.repo /etc/yum.repos.d/
-RUN yum install -y MariaDB-server
+FROM orangehrm/orangehrm-db-images:mariadb-10.3-redhat-8.4-base
 
 VOLUME /var/lib/mysql
+
 COPY config/server.cnf /etc/my.cnf.d/server.cnf
+
+# Disable GSSAPI plugin, since Kerberos authentication is not required 
+RUN echo "" > /etc/my.cnf.d/auth_gssapi.cnf
+
+# Clean MariaDB data directory
+RUN rm -rf /var/lib/mysql/*
 
 COPY entrypoint.sh /usr/local/bin/
 RUN ln -s /usr/local/bin/entrypoint.sh /
