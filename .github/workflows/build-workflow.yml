@@ -50,6 +50,13 @@ jobs:
               if: ${{ env.TAG_NAME != env.VERSION_TAG_NAME }}
               run: docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:${{ env.VERSION_TAG_NAME }}
             
+            - name: Enviroment variables
+              run: | 
+                echo ${{ github.repository }}
+                echo ${{ env.UPSTREAM_REPO }}
+                echo ${{ github.ref }}
+                echo ${{ env.UPSTREAM_BRANCH }}
+                
             - name: Docker hub login
               if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH }}
               run: docker login -u=${{ secrets.DOCKER_HUB_USERNAME }} -p=${{ secrets.DOCKER_HUB_PASSWORD }}
