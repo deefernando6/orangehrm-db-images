@@ -1,21 +1,6 @@
-FROM orangehrm/orangehrm-db-images:mariadb-10.3-redhat-8.4-base
+FROM mariadb:10.3-focal
 
-VOLUME /var/lib/mysql
+LABEL authors = "OrangeHRM TechOps<techops@orangehrm.com>"
 
-COPY config/server.cnf /etc/my.cnf.d/server.cnf
-
-# Disable GSSAPI plugin, since Kerberos authentication is not required 
-RUN echo "" > /etc/my.cnf.d/auth_gssapi.cnf
-
-# Clean MariaDB data directory
-RUN rm -rf /var/lib/mysql/*
-
-COPY entrypoint.sh /usr/local/bin/
-RUN ln -s /usr/local/bin/entrypoint.sh /
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["entrypoint.sh"]
-
-EXPOSE 3306
-
-CMD ["mysqld_safe"]
+# add configurations
+COPY config/my.cnf /etc/mysql/my.cnf
