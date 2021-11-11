@@ -10,6 +10,7 @@ if [ "$1" = 'mysqld_safe' ]; then
 
 	
 	# Create MariaDB log file if not exists
+	mkdir -p /var/log/mariadb
 	touch /var/log/mariadb/mariadb.log
 	chown mysql:root /var/log/mariadb/mariadb.log
 	chmod 770 /var/log/mariadb/mariadb.log
