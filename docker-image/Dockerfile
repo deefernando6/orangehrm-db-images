@@ -1,4 +1,4 @@
-FROM orangehrm/orangehrm-db-images:mariadb-10.3-redhat-8.4-base
+FROM orangehrm/orangehrm-db-images:mariadb-10.5-redhat-8.4-base
 
 VOLUME /var/lib/mysql
 
