@@ -16,15 +16,15 @@ class ContainerEnvironmentCest
 
     public function vefiryInstalledMariaDBVersionTest (UnitTester $I)
     {
-        $I->wantTo("Veify the MariaDB version - 10.3");
+        $I->wantTo("Veify the MariaDB version - 10.5");
         $I->runShellCommand("docker exec db_container mysql -uroot -p1234 --execute=\"SELECT @@version;\""); 
-        $I->seeInShellOutput("10.3.28");
+        $I->seeInShellOutput("10.5.13");
     }
 
     public function vefiryInstalledMariaDBRepoTest (UnitTester $I)
     {
-        $I->wantTo("Veify the MariaDB repository is RHEL appstream");
-        $I->runShellCommand("docker exec db_container yum list installed | grep mariadb-server | awk '{print $3}'"); 
-        $I->seeInShellOutput("@rhel-8-for-x86_64-appstream-rpms");
+        $I->wantTo("Veify the MariaDB repository is MariaDB main");
+        $I->runShellCommand("docker exec db_container yum list installed | grep MariaDB-server | awk '{print $3}'"); 
+        $I->seeInShellOutput("@mariadb-main");
     }
 }
