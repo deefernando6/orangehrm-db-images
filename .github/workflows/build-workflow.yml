@@ -9,7 +9,7 @@ on:
 env:
     REGISTRY: hub.docker.com
     DOCKER_HUB_REPO: "orangehrm/orangehrm-db-images"
-    TAG_NAME: "mariadb-10.3.13-redhat-8.4"
+    TAG_NAME: "mariadb-10.5.13-redhat-8.4"
     MYSQL_PASSWORD: "1234"
     UPSTREAM_REPO: "orangehrm/orangehrm-db-images"
     UPSTREAM_BRANCH: "refs/heads/mariadb-10.5-redhat-8.4"
