@@ -2,17 +2,17 @@ name: OrangeHRM Database Image Build Workflow
 
 on:
     push:
-      branches: [ mariadb-10.3-redhat-8.4 ]   
+      branches: [ mariadb-10.5-redhat-8.4 ]   
     pull_request:
-      branches: [ mariadb-10.3-redhat-8.4 ]
+      branches: [ mariadb-10.5-redhat-8.4 ]
 
 env:
     REGISTRY: hub.docker.com
     DOCKER_HUB_REPO: "orangehrm/orangehrm-db-images"
-    TAG_NAME: "mariadb-10.3.28-redhat-8.4"
+    TAG_NAME: "mariadb-10.5.13-redhat-8.4"
     MYSQL_PASSWORD: "1234"
     UPSTREAM_REPO: "orangehrm/orangehrm-db-images"
-    UPSTREAM_BRANCH: "refs/heads/mariadb-10.3-redhat-8.4"
+    UPSTREAM_BRANCH: "refs/heads/mariadb-10.5-redhat-8.4"
 
 jobs:
     Build:
