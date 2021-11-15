@@ -18,7 +18,7 @@ class ContainerEnvironmentCest
     {
         $I->wantTo("Veify the MariaDB version");
         $I->runShellCommand("docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1"); 
-        $I->seeInShellOutput("10.2");
+        $I->seeInShellOutput("10.5");
     }
 
     public function vefiryInstalledMariaDBRepoTest (UnitTester $I)
