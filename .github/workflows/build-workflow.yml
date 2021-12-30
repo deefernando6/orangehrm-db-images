@@ -9,10 +9,10 @@ on:
 env:
     REGISTRY: hub.docker.com
     DOCKER_HUB_REPO: "orangehrm/orangehrm-db-images"
-    DEFAULT_TAG_NAME: "10.5-latest"
+    DEFAULT_TAG_NAME: "10.4-latest"
     MYSQL_PASSWORD: "1234"
     UPSTREAM_REPO: "orangehrm/orangehrm-db-images"
-    UPSTREAM_BRANCH: "refs/heads/mariadb-10.5-centos-7"
+    UPSTREAM_BRANCH: "refs/heads/mariadb-10.4.22-centos-7"
 
 jobs:
     Build:
