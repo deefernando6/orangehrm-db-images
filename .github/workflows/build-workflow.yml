@@ -1,0 +1,69 @@
+name: OrangeHRM Database Image Build Workflow
+
+on:
+    push:
+      branches: [ mariadb-10.5-centos-7 ]   
+    pull_request:
+      branches: [ mariadb-10.5-centos-7 ]
+
+env:
+    REGISTRY: hub.docker.com
+    DOCKER_HUB_REPO: "orangehrm/orangehrm-db-images"
+    DEFAULT_TAG_NAME: "10.4-latest"
+    MYSQL_PASSWORD: "1234"
+    UPSTREAM_REPO: "orangehrm/orangehrm-db-images"
+    UPSTREAM_BRANCH: "refs/heads/mariadb-10.4.22-centos-7"
+
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+            
+            - name: Verify prerequisits
+              run: |
+                docker --version
+                docker-compose --version
+                composer --version
+            
+            - name: Install test suite dependencis
+              run: composer install
+                          
+            - name: Build docker image
+              run: docker build -t ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} docker-image
+
+            - name: Spin up a container
+              run: |
+                docker run -itd --name db_container -e MYSQL_ROOT_PASSWORD=${{ env.MYSQL_PASSWORD }} ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }}
+                docker ps -a
+
+            - name: Run unit test suite
+              run: |
+                sleep 10s
+                php vendor/bin/codecept run unit
+              
+            - name: Get installed mariadb version
+              run: echo "VERSION_TAG_NAME=$(docker exec db_container yum list installed MariaDB-Server | grep MariaDB-server | awk '{print $2}' | cut -d'-' -f 1)" >> $GITHUB_ENV
+
+            - name: New image with a version tag
+              run: docker tag ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }} ${{ env.DOCKER_HUB_REPO }}:mariadb-${{ env.VERSION_TAG_NAME }} 
+
+            - name: Docker hub login
+              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH }}
+              run: docker login -u=${{ secrets.DOCKER_HUB_USERNAME }} -p=${{ secrets.DOCKER_HUB_PASSWORD }}
+
+            - name: Deploy changes to the version tag
+              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH }}
+              run: docker push ${{ env.DOCKER_HUB_REPO }}:mariadb-${{ env.VERSION_TAG_NAME }}
+
+            - name: Deploy changes to the latest tag
+              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH }}
+              run: docker push ${{ env.DOCKER_HUB_REPO }}:${{ env.DEFAULT_TAG_NAME }}
+              
+            - name: Docker hub logout
+              if: ${{ github.repository == env.UPSTREAM_REPO && github.ref == env.UPSTREAM_BRANCH }}
+              run: docker logout
+            
+
+
