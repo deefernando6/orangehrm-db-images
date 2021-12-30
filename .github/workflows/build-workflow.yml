@@ -2,9 +2,9 @@ name: OrangeHRM Database Image Build Workflow
 
 on:
     push:
-      branches: [ mariadb-10.5-centos-7 ]   
+      branches: [ mariadb-10.4.22-centos-7 ]   
     pull_request:
-      branches: [ mariadb-10.5-centos-7 ]
+      branches: [ mariadb-10.4.22-centos-7 ]
 
 env:
     REGISTRY: hub.docker.com
