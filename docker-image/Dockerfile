@@ -7,7 +7,7 @@ ARG REDHAT_PASSWORD
 VOLUME /var/lib/mysql
 
 # Register a system with the Red Hat Customer Portal
-RUN subscription-manager register --username $REDHAT_USERNAME $REDHAT_USERNAME --password $REDHAT_PASSWORD && \
+RUN subscription-manager register --username $REDHAT_USERNAME --password $REDHAT_PASSWORD && \
 subscription-manager refresh && \
 subscription-manager attach --auto
 
