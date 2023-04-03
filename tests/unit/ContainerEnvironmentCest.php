@@ -24,7 +24,7 @@ class ContainerEnvironmentCest
     public function vefiryInstalledMariaDBRepoTest (UnitTester $I)
     {
         $I->wantTo("Veify the MariaDB repository is MariaDB main");
-        $I->runShellCommand("docker exec db_container yum list installed | grep MariaDB-server | awk '{print $3}'"); 
+        $I->runShellCommand("docker exec db_container yum list installed | grep mariadb-server | awk '{print $3}'"); 
         $I->seeInShellOutput("@rhel-8-for-x86_64-appstream-rpms");
     }
 }
