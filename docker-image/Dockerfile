@@ -8,8 +8,7 @@ VOLUME /var/lib/mysql
 
 # Register a system with the Red Hat Customer Portal
 RUN subscription-manager register --username $REDHAT_USERNAME --password $REDHAT_PASSWORD && \
-subscription-manager refresh && \
-subscription-manager attach --auto
+subscription-manager refresh
 
 RUN yum module install mariadb:10.5/server -y
 
