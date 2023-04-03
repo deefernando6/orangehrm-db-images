@@ -7,8 +7,9 @@ ARG REDHAT_PASSWORD
 VOLUME /var/lib/mysql
 
 # Register a system with the Red Hat Customer Portal
-RUN subscription-manager register --username $REDHAT_USERNAME --password $REDHAT_PASSWORD && \
-subscription-manager refresh
+RUN subscription-manager register --username $REDHAT_USERNAME $REDHAT_USERNAME --password $REDHAT_PASSWORD && \
+subscription-manager refresh && \
+subscription-manager attach --auto
 
 RUN yum module install mariadb:10.5/server -y
 
