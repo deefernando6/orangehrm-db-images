@@ -44,7 +44,7 @@ jobs:
                 php vendor/bin/codecept run unit
 
             - name: Get installed mariadb version
-              run: echo "VERSION_TAG_NAME=mariadb-$(docker exec db_container mysql -uroot -p1234 --execute='SELECT @@version;' | grep MariaDB | cut -d'-' -f 1)-ubuntu-20.04" >> $GITHUB_ENV
+              run: echo "VERSION_TAG_NAME=mariadb-$(docker exec db_container mysql -uroot -p1234 --execute='SELECT @@version;' | grep MariaDB | cut -d'-' -f 1)-ubuntu-22.04" >> $GITHUB_ENV
 
             - name: New image with a version tag
               if: ${{ env.TAG_NAME != env.VERSION_TAG_NAME }}
