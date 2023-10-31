@@ -1,4 +1,4 @@
-FROM mariadb:10.4-focal
+FROM mariadb:10.11.5-jammy
 
 LABEL authors = "OrangeHRM TechOps<techops@orangehrm.com>"
 
