@@ -2,9 +2,9 @@ name: OrangeHRM Database Image Build Workflow
 
 on:
     push:
-      branches: [ mariadb-10.11.5-ubuntu-22.04_local ]   
+      branches: [ mariadb-10.11.5-ubuntu-22.04 ]   
     pull_request:
-      branches: [ mariadb-10.11.5-ubuntu-22.04_local ]
+      branches: [ mariadb-10.11.5-ubuntu-22.04 ]
 
 env:
     REGISTRY: hub.docker.com
