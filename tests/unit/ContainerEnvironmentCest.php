@@ -11,7 +11,7 @@ class ContainerEnvironmentCest
     {
         $I->wantTo("Veify the container os version - Ubuntu 22.04");
         $I->runShellCommand("docker exec db_container cat /etc/os-release | grep PRETTY_NAME | cut -d'=' -f 2"); 
-        $I->seeInShellOutput("Ubuntu 22.04.3 LTS");
+        $I->seeInShellOutput("Ubuntu 22.04.4 LTS");
     }
 
     public function vefiryInstalledMariaDBVersionTest (UnitTester $I)
