@@ -21,12 +21,12 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v2
             
-            - name: Verify prerequisits
+            - name: Verify prerequisites
               run: |
                 docker --version
                 composer --version
             
-            - name: Install test suite dependencis
+            - name: Install test suite dependencies
               run: composer install
                           
             - name: Build docker image
