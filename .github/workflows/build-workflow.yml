@@ -24,7 +24,6 @@ jobs:
             - name: Verify prerequisits
               run: |
                 docker --version
-                docker-compose --version
                 composer --version
             
             - name: Install test suite dependencis
